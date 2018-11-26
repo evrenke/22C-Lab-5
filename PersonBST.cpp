@@ -130,6 +130,21 @@ Person* PersonBST::searchByName(std::string name) {
 		}
 	}
 }
+
+void PersonBST::remove(Person* toRemove) {
+	BinaryNode<Person>* pSearch = root;
+	while (toRemove->getName() != pSearch->contents()->getName()) {
+		if (pSearch->contents()->getName() < toRemove->getName()) {
+			if (pSearch->getLeftChild() == NULL) return;
+			pSearch = pSearch->getLeftChild();
+		}
+		else {
+			if (pSearch->getRightChild() == NULL) return;
+			pSearch = pSearch->getRightChild();
+		}
+	}
+	remove(pSearch);
+}
 void PersonBST::remove(BinaryNode<Person>* toRemove) {
 	if (toRemove->getLeftChild() == NULL && toRemove->getRightChild() == NULL) {
 		delete toRemove;
