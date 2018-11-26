@@ -13,7 +13,7 @@ BinaryNode<Person>* PersonBST::getLeftmost(BinaryNode<Person>* head) {
 	}
 	return temp;
 }
-
+/*
 //Copies the tree to an array of pointers to a node and returns said array.
 BinaryNode<Person>** PersonBST::copyToArr() {
 	BinaryNode<Person>** arr = new BinaryNode<Person>*[size];
@@ -27,10 +27,10 @@ void PersonBST::copyToArr(BinaryNode<Person>** arr, BinaryNode<Person>* start) {
 	copyToArr(arr, start->getLeftChild());
 	copyToArr(arr, start->getRightChild());
 }
-
-void PersonBST::addByName(Person toAdd) {
+*/
+void PersonBST::addByName(Person *toAdd) {
 	BinaryNode<Person>* pNode = new BinaryNode<Person>(toAdd);
-	addByBirthday(pNode);
+	addByName(pNode);
 }
 void PersonBST::addByName(BinaryNode<Person>* pNode) {
 	if (root == NULL) {
@@ -39,7 +39,7 @@ void PersonBST::addByName(BinaryNode<Person>* pNode) {
 	}
 	BinaryNode<Person>* temp = root;
 	while (true) {
-		if (pNode->contents()->getName() < temp->contents()->getName()) {
+		if (pNode->getData()->getName() <  temp->getData()->getName()){
 			if (temp->getLeftChild() == NULL) {
 				temp->setLeftChild(pNode);
 				return;
@@ -56,7 +56,7 @@ void PersonBST::addByName(BinaryNode<Person>* pNode) {
 	}
 	size++;
 }
-void PersonBST::addByBirthday(Person toAdd) {
+void PersonBST::addByBirthday(Person *toAdd) {
 	BinaryNode<Person>* pNode = new BinaryNode<Person>(toAdd);
 	addByBirthday(pNode);
 }
@@ -67,7 +67,7 @@ void PersonBST::addByBirthday(BinaryNode<Person>* pNode) {
 	}
 	BinaryNode<Person>* temp = root;
 	while (true) {
-		if (pNode->contents()->getBirthday() < temp->contents()->getBirthday()) {
+		if (pNode->getData()->getBirthday() < temp->getData()->getBirthday()) {
 			if (temp->getLeftChild() == NULL) {
 				temp->setLeftChild(pNode);
 				return;
@@ -84,7 +84,7 @@ void PersonBST::addByBirthday(BinaryNode<Person>* pNode) {
 	}
 	size++;
 }
-
+/*
 void PersonBST::sortByName() {
 	BinaryNode<Person>** arr = copyToArr();
 	for (int i = 0; i < size; i++) {
@@ -97,14 +97,14 @@ void PersonBST::sortByBirthday() {
 		addByBirthday(arr[i]);
 	}
 }
-
+*/
 Person* PersonBST::searchByBirthday(std::string bday) {
 	BinaryNode<Person>* pSearch = root;
 	while (true) {
-		if (pSearch->contents()->getBirthday() == bday) {
-			return pSearch->contents();
+		if (pSearch->getData()->getBirthday() == bday) {
+			return pSearch->getData();
 		}
-		else if (pSearch->contents()->getBirthday() < bday) {
+		else if (pSearch->getData()->getBirthday() < bday) {
 			if (pSearch->getLeftChild() == NULL) return NULL;
 			pSearch = pSearch->getLeftChild();
 		}
@@ -114,13 +114,13 @@ Person* PersonBST::searchByBirthday(std::string bday) {
 		}
 	}
 }
-Person* PersonBST::searchByName(std::string bday) {
+Person* PersonBST::searchByName(std::string name) {
 	BinaryNode<Person>* pSearch = root;
 	while (true) {
-		if (pSearch->contents()->getName() == bday) {
-			return pSearch->contents();
+		if (pSearch->getData()->getName() == name) {
+			return pSearch->getData();
 		}
-		else if (pSearch->contents()->getName() < bday) {
+		else if (pSearch->getData()->getName() < name) {
 			if (pSearch->getLeftChild() == NULL) return NULL;
 			pSearch = pSearch->getLeftChild();
 		}
@@ -137,12 +137,12 @@ void PersonBST::remove(BinaryNode<Person>* toRemove) {
 	}
 	if (toRemove->getLeftChild() != NULL) {
 		BinaryNode<Person>* pNode = getRightmost(toRemove->getLeftChild());
-		toRemove->setInfo(pNode->contents());
+		toRemove->setInfo(pNode->getData());
 		remove(pNode);
 	}
 	else {
 		BinaryNode<Person>* pNode = getLeftmost(toRemove->getRightChild());
-		toRemove->setInfo(pNode->contents());
+		toRemove->setInfo(pNode->getData());
 		remove(pNode);
 	}
 }

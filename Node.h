@@ -36,7 +36,7 @@ public:
 	}
 
 	//Returns the pointer to the object within the Node
-	ObjectType* getObj() {
+	ObjectType* getData() {
 		return objectPtr;
 	}
 

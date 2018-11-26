@@ -2,14 +2,13 @@
 #include <string>
 class Person {
 private:
-	std::string firstName, lastName, birthday;
+	std::string fullName, birthday;
 public:
 	Person();
-	Person(std::string first, std::string last, std::string add);
+	Person(std::string name, std::string add);
 	~Person() {}
-	std::string getName() { return firstName + " " + lastName; }
+	std::string getName() { return fullName; }
 	std::string getBirthday() { return birthday; }
-	void setFirstName(std::string in) { firstName = in; }
-	void setLastName(std::string in) { lastName = in; }
+	void setName(std::string in) { fullName = in; }
 	void setBirthday(std::string in) { birthday = in; }
 };
