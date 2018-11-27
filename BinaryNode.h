@@ -25,7 +25,7 @@ public:
 	//Deletes all nodes below to prevent memory leaks. Deleting the root will delete the entire tree.
 	//If removing a single node from the tree is desired, use the remove function within the BST class instead.
 	~BinaryNode() {
-		delete this->getData();
+		//delete this->getData();
 		delete rightChild;
 		delete leftChild;
 	}
