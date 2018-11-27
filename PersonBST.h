@@ -27,8 +27,8 @@ public:
 
 	//Returns NULL if none is found. Beware of carelessly dereferencing it
 	Person* searchByName(std::string);
-	Person* searchByBirthday(std::string);
+	Person* searchByBirthday(Birthday);
 
-	void PersonBST::remove(Person* toRemove);
+	void remove(Person* toRemove);
 	void remove(BinaryNode<Person>**);
 };

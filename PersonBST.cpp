@@ -94,7 +94,7 @@ void PersonBST::addByBirthday(BinaryNode<Person>* pNode)
 	}
 }
 
-Person* PersonBST::searchByBirthday(std::string bday)
+Person* PersonBST::searchByBirthday(Birthday bday)
 {
 	BinaryNode<Person>* pSearch = root;
 	while (true)

@@ -1,12 +1,16 @@
-
-Berkay Keskin	02/09/1995
-Nathan Nguyen	01/15/1997
-Yekta Yazar	01/03/1991
-Bob Bobbington	06/06/2006
-Pierre Grubb	02/28/1998
-Nikki Feskanish	05/04/2001Angelo Yazar	07/07/1989
-Evren Keskin	12/08/1999
-Ipek Keskin	07/07/1997
-Cody Perkins	12/09/1998
-Dave Davington	15/03/1988
-Jack	2/2/2002
+Inorder List of People by Birthdays BST
+Angelo Yazar	1989-07-07
+Trevor R. Belmont	1990-09-01
+Yekta Yazar	1991-01-03
+Tuan Nguyen	1992-10-19
+tim	1995-01-01
+Berkay Keskin	1995-02-09
+Marialuisa 'Lita' Yazar	1995-09-24
+Nathan Nguyen	1997-01-15
+Audrey Grace Li	1997-05-14
+Ipek Keskin	1997-07-07
+Pierre Grubb	1998-02-28
+Evren Keskin the Great	1998-12-08
+Cody Perkins	1998-12-09
+Nikki Feskanish	2001-05-04
+Bob Bobby Bobbington	2006-06-06

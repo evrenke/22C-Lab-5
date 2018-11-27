@@ -14,6 +14,8 @@ void displayPreOrder(BinaryNode<Person> *rootNode, std::ofstream *outfile, bool 
 void displayInOrder(BinaryNode<Person> *rootNode, std::ofstream *outfile, bool isOnSameLine);
 void displayPostOrder(BinaryNode<Person> *rootNode, std::ofstream *outfile, bool isOnSameLine);
 
+void updateOutputFiles(std::ofstream *namesFile, BinaryNode<Person> *nRootNode, std::ofstream *birthdaysFile, BinaryNode<Person> *bRootNode);
+
 int main()
 {
 	std::ofstream namesFile;
@@ -25,15 +27,15 @@ int main()
 	PersonBST nameDataBase = PersonBST();
 	PersonBST birthdayDataBase = PersonBST();
 	std::string name = "names";
-	std::string birthday = "birthdays";
+	std::string birthdayStr = "birthdays";
+	Birthday birthday;
 	while (inputFile)
 	{
 		if (inputFile.eof()) break;
 		getline(inputFile, name, '\n');
-		getline(inputFile, birthday, '\n');
-		
-		Person *newNamePerson = new Person(name, birthday);
-		Person *newBirthdayPerson = new Person(name, birthday);
+		getline(inputFile, birthdayStr, '\n');
+		Person *newNamePerson = new Person(name, birthday.stoBirthday(birthdayStr));
+		Person *newBirthdayPerson = new Person(name, birthday.stoBirthday(birthdayStr));
 		
 		nameDataBase.addByName(newNamePerson);
 		birthdayDataBase.addByBirthday(newBirthdayPerson);
@@ -41,28 +43,36 @@ int main()
 	inputFile.close();
 
 	//USER INTERACTION WITH DATABASE
-	int length = 8;
+	int mainLength = 7;
 	std::string options[] =
 	{
 		"Enter a new person", // option 1
 		"Search for a person in database",// option 2
 		"Modify a persons data",// option 3
 		"Remove a person from the database",// option 4
-		"Display database in name-based preorder sequence",// option 5
-		"Display database in name-based postorder sequence",// option 6
-		"Display database in birthday-based inorder sequence",// option 7
-		"Exit program"// option 8
+		"Display database in name-based sequence",// option 5
+		"Display database in birthday-based sequence",// option 6
+		"Exit program"// option 7
 	};
-	Menu menu = Menu(options, length);
-
+	Menu menu = Menu(options, mainLength);
+	
+	int orderLength = 4;
+	std::string BSTorderOptions[] =
+	{
+		"Display in preorder",
+		"Display in inorder",
+		"Display in postorder",
+		"Return to main menu"
+	};
+	Menu BSTorderMenu = Menu(BSTorderOptions, orderLength);
 	std::ofstream outputPerson;
 	int option = 0;
 	std::string inputStr;
 	int inputInt;
 	Person *newNamePerson = nullptr, *newBirthdayPerson = nullptr, *found = nullptr;
 	BinaryNode<Person> *rootNode;
-
-	while (option != length)
+	bool willPause;
+	while (option != mainLength)
 	{
 		option = menu.printOptionsList();
 		switch (option)
@@ -71,28 +81,28 @@ int main()
 			outputPerson.open("InputData.txt", std::fstream::app);
 			std::cout << "Enter the new persons name:" << std::endl;
 			name = menu.takeStringInput();
-			birthday = "";
-			std::cout << "Enter the new persons birthday date (1-31):" << std::endl;
-			inputInt = menu.takeRangedIntInput(1, 31);
-			if (inputInt < 10)
-				birthday += '0';
-			birthday += std::to_string(inputInt) + "/";
+			birthdayStr = "";
+			std::cout << "Enter the new persons birthday year (1900-2018):" << std::endl;
+			inputInt = menu.takeRangedIntInput(1900, 2018);
+			birthdayStr += std::to_string(inputInt) + "-";
 			std::cout << "Enter the new persons birthday month (1-12):" << std::endl;
 			inputInt = menu.takeRangedIntInput(1, 12);
 			if (inputInt < 10)
-				birthday += '0';
-			birthday += std::to_string(inputInt) + "/";
-			std::cout << "Enter the new persons birthday year (1900-2018):" << std::endl;
-			inputInt = menu.takeRangedIntInput(1900, 2018);
-			birthday += std::to_string(inputInt);
+				birthdayStr += '0';
+			birthdayStr += std::to_string(inputInt) + "-";
+			std::cout << "Enter the new persons birthday date (1-31):" << std::endl;
+			inputInt = menu.takeRangedIntInput(1, 31);
+			if (inputInt < 10)
+				birthdayStr += '0';
+			birthdayStr += std::to_string(inputInt);
 
-			newNamePerson = new Person(name, birthday);
-			newBirthdayPerson = new Person(name, birthday);
+			newNamePerson = new Person(name, birthday.stoBirthday(birthdayStr));
+			newBirthdayPerson = new Person(name, birthday.stoBirthday(birthdayStr));
 
 			nameDataBase.addByName(newNamePerson);
 			birthdayDataBase.addByBirthday(newBirthdayPerson);
 
-			outputPerson << std::endl << name << std::endl << birthday;
+			outputPerson << std::endl << name << std::endl << birthdayStr;
 			outputPerson.close();
 			break;
 		case 2://Search a person from the database
@@ -105,7 +115,7 @@ int main()
 			}
 			else
 			{
-				std::cout << found->getName() << " was found with birthday " << found->getBirthday() << " ." << std::endl;
+				std::cout << found->getName() << " was found with birthday " << found->getBirthday().to_string() << " ." << std::endl;
 			}
 			pause();
 			break;
@@ -119,7 +129,7 @@ int main()
 			}
 			else
 			{
-				std::cout << found->getName() << " was found with birthday " << found->getBirthday() << " ." << std::endl;
+				std::cout << found->getName() << " was found with birthday " << found->getBirthday().to_string() << " ." << std::endl;
 			}
 
 			while (inputStr != "n" && inputStr != "N")
@@ -131,8 +141,7 @@ int main()
 					std::cout << "Enter the new name of " << found->getName() << std::endl;
 					inputStr = menu.takeStringInput();
 					found->setName(inputStr);
-					if (birthdayDataBase.searchByBirthday(found->getBirthday()) == nullptr)
-						std::cout << "Null" << std::endl;// ->setName(inputStr);
+					birthdayDataBase.searchByBirthday(found->getBirthday())->setName(inputStr);
 					inputStr = "n";
 				}
 			}
@@ -143,18 +152,22 @@ int main()
 				inputStr = menu.takeCharInput();
 				if (inputStr == "y" || inputStr == "Y")
 				{
-					birthday = "";
-					std::cout << "Enter the new persons birthday date (1-31):" << std::endl;
-					inputInt = menu.takeRangedIntInput(1, 31);
-					birthday += std::to_string(inputInt) + "/";
-					std::cout << "Enter the new persons birthday month (1-12):" << std::endl;
-					inputInt = menu.takeRangedIntInput(1, 12);
-					birthday += std::to_string(inputInt) + "/";
+					birthdayStr = "";
 					std::cout << "Enter the new persons birthday year (1900-2018):" << std::endl;
 					inputInt = menu.takeRangedIntInput(1900, 2018);
-					birthday += std::to_string(inputInt);
-					birthdayDataBase.searchByBirthday(found->getBirthday())->setBirthday(birthday);
-					found->setBirthday(birthday);
+					birthdayStr += std::to_string(inputInt) + "-";
+					std::cout << "Enter the new persons birthday month (1-12):" << std::endl;
+					inputInt = menu.takeRangedIntInput(1, 12);
+					if (inputInt < 10)
+						birthdayStr += '0';
+					birthdayStr += std::to_string(inputInt) + "-";
+					std::cout << "Enter the new persons birthday date (1-31):" << std::endl;
+					inputInt = menu.takeRangedIntInput(1, 31);
+					if (inputInt < 10)
+						birthdayStr += '0';
+					birthdayStr += std::to_string(inputInt);
+					birthdayDataBase.searchByBirthday(found->getBirthday())->setBirthday(birthday.stoBirthday(birthdayStr));
+					found->setBirthday(birthday.stoBirthday(birthdayStr));
 					inputStr = "n";
 				}
 			}
@@ -163,6 +176,9 @@ int main()
 			//now the database will be inorder traversed to add modified into back into the file
 			displayPreOrder(nameDataBase.root, &outputPerson, false);
 			//update InputData.txt with new data
+			outputPerson.close();
+			system("CLS");
+			
 			break;
 		case 4://Remove a person from the database
 			std::cout << "What is the name of the person you would like to REMOVE from the database ?" << std::endl;
@@ -174,7 +190,7 @@ int main()
 			}
 			else
 			{
-				std::cout << found->getName() << " was found with birthday " << found->getBirthday() << "." << std::endl;
+				std::cout << found->getName() << " was found with birthday " << found->getBirthday().to_string() << "." << std::endl;
 				nameDataBase.remove(found);
 
 				outputPerson.open("InputData.txt");//deletes previous data
@@ -186,47 +202,92 @@ int main()
 			}
 			pause();
 			break;
-		case 5:
-			//WRITE OUT EVERYONE IN PREORDER (NODE-LEFT-RIGHT)
-			//AND POST-ORDER (LEFT-RIGHT-NODE)
-			//FROM THE NAME DATABASE INTO  NamesOutput.txt
-			namesFile.open("NamesOutput.txt");
-			std::cout << "Now to show a PREORDER traversal of the name based binary search tree" << std::endl;
-			rootNode = nameDataBase.root;
-			displayPreOrder(rootNode, &namesFile, true);
-			namesFile.close();
-			pause();
+		case 5://Display database in name-based sequence
+			std::cout << "The name-based database will be displayed" << std::endl;
+			inputInt = BSTorderMenu.printOptionsList();
+			willPause = true;
+			switch (inputInt)
+			{
+			case 1:
+				std::cout << "Now to show a PREORDER traversal of the name based binary search tree" << std::endl;
+				rootNode = nameDataBase.root;
+				displayPreOrder(rootNode, nullptr, true);
+				break;
+			case 2:
+				std::cout << "Now to show a INORDER traversal of the name based binary search tree" << std::endl;
+				rootNode = nameDataBase.root;
+				displayInOrder(rootNode, nullptr, true);
+				break;
+			case 3:
+				std::cout << "Now to show a POSTORDER traversal of the name based binary search tree" << std::endl;
+				rootNode = nameDataBase.root;
+				displayPostOrder(rootNode, nullptr, true);
+				break;
+			case 4:
+				willPause = false;
+			default:
+				break;
+			}
+			if(willPause)
+				pause();
 			break;
-		case 6:
-			namesFile.open("NamesOutput.txt");
-			std::cout << "Now to show a POSTORDER traversal of the name based binary search tree" << std::endl;
-			rootNode = nameDataBase.root;
-			displayPostOrder(rootNode, &namesFile, true);
-			namesFile.close();
-			pause();
-			break;
-		case 7:
-			birthdaysFile.open("BirthdaysOutput.txt");
-			std::cout << "Now to show an INORDER traversal of the birthday based binary search tree" << std::endl;
-			rootNode = birthdayDataBase.root;
-			displayInOrder(rootNode, &birthdaysFile, true);
-			birthdaysFile.close();
-			pause();
-			//WRITE OUT EVERYONE INORDER (LEFT-NODE-RIGHT)
-			//breadth-first
+		case 6://Display database in birthday-based sequence
+			std::cout << "The birthday-based database will be displayed" << std::endl;
+			inputInt = BSTorderMenu.printOptionsList();
+			willPause = true;
+			switch (inputInt)
+			{
+			case 1:
+				std::cout << "Now to show a PREORDER traversal of the birthday based binary search tree" << std::endl;
+				rootNode = birthdayDataBase.root;
+				displayPreOrder(rootNode, nullptr, true);
+				break;
+			case 2:
+				std::cout << "Now to show a INORDER traversal of the birthday based binary search tree" << std::endl;
+				rootNode = birthdayDataBase.root;
+				displayInOrder(rootNode, nullptr, true);
+				break;
+			case 3:
+				std::cout << "Now to show a POSTORDER traversal of the birthday based binary search tree" << std::endl;
+				rootNode = birthdayDataBase.root;
+				displayPostOrder(rootNode, nullptr, true);
+				break;
+			case 4:
+				willPause = false;
+			default:
+				break;
+			}
+			if (willPause)
+				pause();
 			break;
 		default:
 			break;
 		}
+		updateOutputFiles(&namesFile, nameDataBase.root, &birthdaysFile, birthdayDataBase.root);
 	}
-	
 
-	//output file contains names and birthdays on a single line separated by tabs
-	//EACH SECTION IDENTIFIED BY A HEADER (NOT THOSE HEADERS YOU BAFOON)
 	nameDataBase.~PersonBST();
 	birthdayDataBase.~PersonBST();
 
 	return 0;
+}
+
+void updateOutputFiles(std::ofstream *namesFile, BinaryNode<Person> *nRootNode, std::ofstream *birthdaysFile, BinaryNode<Person> *bRootNode)
+{
+	//AFTER THE USER INTERACTION IS COMPLETE THE TWO DATABASES ARE USED
+	//TO WRITE TO NamesOutput.txt AND BirthdaysOutput.txt
+	//OUTPUT FILE CONTAIN NAMES AND BIRTHDAYS ON A SINGLE LINE SEPERATED BY TABS
+	//EACH SECTION IDENTIFIED BY A HEADER
+	namesFile->open("NamesOutput.txt");
+	writeOutput(namesFile, "Preorder List of People by Names BST\n");
+	displayPreOrder(nRootNode, namesFile, true);
+	writeOutput(namesFile, "\nPostorder List of People by Names BST\n");
+	displayPostOrder(nRootNode, namesFile, true);
+	namesFile->close();
+	birthdaysFile->open("BirthdaysOutput.txt");
+	writeOutput(birthdaysFile, "Inorder List of People by Birthdays BST\n");
+	displayInOrder(bRootNode, birthdaysFile, true);
+	birthdaysFile->close();
 }
 
 void pause()
@@ -247,7 +308,7 @@ void displayPreOrder(BinaryNode<Person> *rootNode, std::ofstream *outfile, bool 
 	
 	writeOutput(outfile, rootNode->getData()->getName());
 	writeOutput(outfile, NBseperator);
-	writeOutput(outfile, rootNode->getData()->getBirthday());
+	writeOutput(outfile, rootNode->getData()->getBirthday().to_string());
 
 	if (leftNode != nullptr)
 	{
@@ -272,18 +333,18 @@ void displayInOrder(BinaryNode<Person> *rootNode, std::ofstream *outfile, bool i
 
 	if (leftNode != nullptr)
 	{
+		displayInOrder(leftNode, outfile, isOnSameLine);
 		writeOutput(outfile, '\n');
-		displayPreOrder(leftNode, outfile, isOnSameLine);
 	}
 
 	writeOutput(outfile, rootNode->getData()->getName());
 	writeOutput(outfile, NBseperator);
-	writeOutput(outfile, rootNode->getData()->getBirthday());
+	writeOutput(outfile, rootNode->getData()->getBirthday().to_string());
 
 	if (rightNode != nullptr)
 	{
 		writeOutput(outfile, '\n');
-		displayPreOrder(rightNode, outfile, isOnSameLine);
+		displayInOrder(rightNode, outfile, isOnSameLine);
 	}
 }
 
@@ -298,24 +359,26 @@ void displayPostOrder(BinaryNode<Person> *rootNode, std::ofstream *outfile, bool
 
 	if (leftNode != nullptr)
 	{
+		displayPostOrder(leftNode, outfile, isOnSameLine);
 		writeOutput(outfile, '\n');
-		displayPreOrder(leftNode, outfile, isOnSameLine);
 	}
 	if (rightNode != nullptr)
 	{
+		
+		displayPostOrder(rightNode, outfile, isOnSameLine);
 		writeOutput(outfile, '\n');
-		displayPreOrder(rightNode, outfile, isOnSameLine);
 	}
 
 	writeOutput(outfile, rootNode->getData()->getName());
 	writeOutput(outfile, NBseperator);
-	writeOutput(outfile, rootNode->getData()->getBirthday());
+	writeOutput(outfile, rootNode->getData()->getBirthday().to_string());
 }
-
 
 template <class ObjectType>
 void writeOutput(std::ofstream *outfile, ObjectType output)
 {
-	std::cout << output;
-	*outfile << output;
+	if(outfile != nullptr)
+		*outfile << output;
+	else//outfile is nullptr
+		std::cout << output;
 }

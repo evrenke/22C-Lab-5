@@ -1,9 +1,11 @@
 #include "Person.h"
 Person::Person() {
 	fullName = "";
-	birthday = "";
+	birthday.day = 1;
+	birthday.month = 1;
+	birthday.year = 1900;
 }
-Person::Person(std::string name, std::string add) {
+Person::Person(std::string name, Birthday add) {
 	fullName = name;
 	birthday = add;
 }
