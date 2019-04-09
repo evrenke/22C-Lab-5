@@ -1,5 +1,6 @@
 #include "PersonBST.h"
 #include <iostream>
+
 BinaryNode<Person>* PersonBST::getRightmost(BinaryNode<Person>* head)
 {
 	BinaryNode<Person>* temp = head;
@@ -138,44 +139,45 @@ Person* PersonBST::searchByName(std::string name)
 	}
 }
 
-void PersonBST::remove(Person* toRemove) {
-	BinaryNode<Person>** pSearch = &root;
-	while (toRemove->getName() != (*pSearch)->getData()->getName()) {
-		if ((*pSearch)->getData()->getName() > toRemove->getName()) {
-			if ((*pSearch)->getLeftChild() == NULL)
-				break;
-			*pSearch = (*pSearch)->getLeftChild();
+bool PersonBST::remove(Person* toRemove) {
+	BinaryNode<Person>* pSearch = root;
+	while (toRemove->getName() != pSearch->getData()->getName()) {
+		if (toRemove->getName() < pSearch->getData()->getName()) {
+			if (pSearch->getLeftChild() == nullptr)
+				return false;
+			pSearch = pSearch->getLeftChild();
 		}
-		else if ((*pSearch)->getData()->getName() < toRemove->getName()) {
-			if ((*pSearch)->getRightChild() == NULL)
-				break;
-			*pSearch = (*pSearch)->getRightChild();
+		else if (pSearch->getData()->getName() < toRemove->getName()) {
+			if (pSearch->getRightChild() == nullptr)
+				return false;
+			pSearch = pSearch->getRightChild();
 		}
 	}
-	remove(pSearch);
+	return remove(pSearch);
 }
 
-void PersonBST::remove(BinaryNode<Person>** toRemove)
+bool PersonBST::remove(BinaryNode<Person>* toRemove)
 {
-	if ((*toRemove)->getLeftChild() == NULL && (*toRemove)->getRightChild() == NULL)
+	if (toRemove->getLeftChild() == nullptr && toRemove->getRightChild() == nullptr)
 	{
-		delete *toRemove;
+		std::cout << toRemove->getData()->getName() << " Removed" << std::endl;
+		delete toRemove;
 		toRemove = nullptr;
-		std::cout << "Removed" << std::endl;
-		return;
+		return true;
 	}
-	if ((*toRemove)->getLeftChild() != NULL)
+	if (toRemove->getLeftChild() != nullptr)
 	{
-		BinaryNode<Person>* pNode = getRightmost((*toRemove)->getLeftChild());
-		(*toRemove)->setInfo(pNode->getData());
-		toRemove = &pNode;
-		remove(&pNode);
+		BinaryNode<Person>* pNode = getRightmost(toRemove->getLeftChild());
+		toRemove->setInfo(pNode->getData());
+		toRemove = pNode;
+		return remove(pNode);
 	}
 	else
 	{
-		BinaryNode<Person>* pNode = getLeftmost((*toRemove)->getRightChild());
-		(*toRemove)->setInfo(pNode->getData());
-		toRemove = &pNode;
-		remove(&pNode);
+		BinaryNode<Person>* pNode = getLeftmost(toRemove->getRightChild());
+		toRemove->setInfo(pNode->getData());
+		toRemove = pNode;
+		return remove(pNode);
 	}
+	return false;
 }
